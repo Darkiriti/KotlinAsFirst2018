@@ -64,7 +64,7 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  */
 fun ageDescription(age: Int): String {
     if ((age % 100 > 10) && (age % 100 < 20)) return "$age лет"
-    when (age % 10){
+    when (age % 10) {
         1 -> return "$age год"
         2, 3, 4 -> return "$age года"
         else -> return "$age лет"
@@ -83,9 +83,11 @@ fun timeForHalfWay(t1: Double, v1: Double,
                    t2: Double, v2: Double,
                    t3: Double, v3: Double): Double {
     val s = (v1 * t1 + v2 * t2 + v3 * t3) / 2
-    if (s <= v1 * t1) return s / v1
-    if (s <= v1 * t1 + v2 * t2) return t1 + (s - v1 * t1) / v2
-    else return t1 + t2 + (s - v1 * t1 - v2 * t2) / v3
+    return when {
+        s <= v1 * t1 -> return s / v1
+        s <= v1 * t1 + v2 * t2 -> return t1 + (s - v1 * t1) / v2
+        else -> return t1 + t2 + (s - v1 * t1 - v2 * t2) / v3
+    }
 }
 
 /**
@@ -100,17 +102,18 @@ fun timeForHalfWay(t1: Double, v1: Double,
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
                        rookX2: Int, rookY2: Int): Int {
-    var a = 0
-    var b = 0
-    if (kingX == rookX1) a++
-    if (kingX == rookX2) b++
-    if (kingY == rookY1) a++
-    if (kingY == rookY2) b++
-    if ((a > 0) && (b > 0)) return 3
-    else if (a > b) return 1
-    else if (b > a) return 2
-    else return 0
+    var a = false
+    var b = false
+    if ((kingX == rookX1) || (kingY == rookY1)) a = true
+    if ((kingX == rookX2) ||(kingY == rookY2)) b = true
+    return when {
+        a == true && b == true -> return 3
+        a == true && b == false -> return 1
+        b == true && a == false -> return 2
+        else -> return 0
+    }
 }
+
 
 /**
  * Простая
@@ -127,14 +130,16 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           bishopX: Int, bishopY: Int): Int {
     val a = (kingX - bishopX) * (kingX - bishopX)
     val b = (kingY - bishopY) * (kingY - bishopY)
-    var x = 0
-    var y = 0
-    if (a == b) x++
-    if ((kingX == rookX) || (kingY == rookY)) y++
-    if ((x > 0) && (y > 0)) return 3
-    if (x > y) return 2
-    if (y > x) return 1
-    else return 0
+    var x = false
+    var y = false
+    if (a == b) x = true
+    if ((kingX == rookX) || (kingY == rookY)) y = true
+    return when {
+        x == true && y == true -> return 3
+        x == true && y != true -> return 2
+        y == true && x != true -> return 1
+        else -> return 0
+    }
 }
 
 /**
@@ -177,7 +182,7 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
         else return -1
     }
     if (a == c)
-        if (b >= d) return d
-        else return b
+        if (b >= d) return d - a
+        else return b - a
     else return 0
 }
