@@ -84,9 +84,9 @@ fun timeForHalfWay(t1: Double, v1: Double,
                    t3: Double, v3: Double): Double {
     val s = (v1 * t1 + v2 * t2 + v3 * t3) / 2
     return when {
-        s <= v1 * t1 -> return s / v1
-        s <= v1 * t1 + v2 * t2 -> return t1 + (s - v1 * t1) / v2
-        else -> return t1 + t2 + (s - v1 * t1 - v2 * t2) / v3
+        s <= v1 * t1 -> s / v1
+        s <= v1 * t1 + v2 * t2 -> t1 + (s - v1 * t1) / v2
+        else -> t1 + t2 + (s - v1 * t1 - v2 * t2) / v3
     }
 }
 
@@ -107,10 +107,10 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
     if ((kingX == rookX1) || (kingY == rookY1)) a = true
     if ((kingX == rookX2) ||(kingY == rookY2)) b = true
     return when {
-        a == true && b == true -> return 3
-        a == true && b == false -> return 1
-        b == true && a == false -> return 2
-        else -> return 0
+        a && b -> 3
+        a && !b -> 1
+        b && !a -> 2
+        else -> 0
     }
 }
 
@@ -135,10 +135,10 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
     if (a == b) x = true
     if ((kingX == rookX) || (kingY == rookY)) y = true
     return when {
-        x == true && y == true -> return 3
-        x == true && y != true -> return 2
-        y == true && x != true -> return 1
-        else -> return 0
+        x && y -> 3
+        x && !y -> 2
+        y && !x -> 1
+        else -> 0
     }
 }
 
@@ -151,14 +151,14 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if ((a + b <= c) || (a + c <= b) || (b + c <= a)) return -1
-    else {
-        val cos1 = (a * a + b * b - c * c) / (2 * a * b)
-        val cos2 = (a * a - b * b + c * c) / (2 * a * c)
-        val cos3 = (-a * a + b * b + c * c) / (2 * b * b)
-        if ((cos1 == 0.0) || (cos2 == 0.0) || cos3 == 0.0) return 1
-        if ((cos1 < 0) || (cos2 < 0) || (cos3 < 0)) return 2
-        else return 0
+    val cos1 = (a * a + b * b - c * c) / (2 * a * b)
+    val cos2 = (a * a - b * b + c * c) / (2 * a * c)
+    val cos3 = (-a * a + b * b + c * c) / (2 * b * b)
+    return when {
+        a + b <= c || a + c <= b || b + c <= a -> -1
+        cos1 == 0.0 || cos2 == 0.0 || cos3 == 0.0 -> 1
+        cos1 < 0 || cos2 < 0 || cos3 < 0 -> 2
+        else -> 0
     }
 }
 
@@ -171,18 +171,13 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (a < c) {
-        if ((b >= c) && (b <= d)) return b - c
-        if ((b >= c) && (b > d)) return d - c
-        else return -1
+    return when {
+        maxOf(a, c) == c && maxOf(b, c) == b && minOf(b, d) == b -> b - c
+        maxOf(a, c) == c && maxOf(b, c) == b && maxOf(b, d) == b -> d - c
+        maxOf(a, c) == a && maxOf(d, a) == d && minOf(b, d) == d -> d - a
+        maxOf(a, c) == a && maxOf(d, a) == d && maxOf(b, d) == d -> b - a
+        a == c && minOf(b, d) == d -> d - a
+        a == c && minOf(b, d) == b -> b - a
+        else -> -1
     }
-    if (a > c) {
-        if ((d >= a) && (d <= b)) return d - a
-        if ((d >= a) && (d > b)) return b - a
-        else return -1
-    }
-    if (a == c)
-        if (b >= d) return d - a
-        else return b - a
-    else return 0
 }
