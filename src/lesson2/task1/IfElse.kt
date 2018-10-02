@@ -64,10 +64,10 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  */
 fun ageDescription(age: Int): String {
     if ((age % 100 > 10) && (age % 100 < 20)) return "$age лет"
-    when (age % 10) {
-        1 -> return "$age год"
-        2, 3, 4 -> return "$age года"
-        else -> return "$age лет"
+    return when (age % 10) {
+        1 -> "$age год"
+        2, 3, 4 -> "$age года"
+        else -> "$age лет"
     }
 }
 
@@ -102,10 +102,8 @@ fun timeForHalfWay(t1: Double, v1: Double,
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
                        rookX2: Int, rookY2: Int): Int {
-    var a = false
-    var b = false
-    if ((kingX == rookX1) || (kingY == rookY1)) a = true
-    if ((kingX == rookX2) ||(kingY == rookY2)) b = true
+    val a = (kingX == rookX1) || (kingY == rookY1)
+    val b = (kingX == rookX2) || (kingY == rookY2)
     return when {
         a && b -> 3
         a && !b -> 1
@@ -130,10 +128,8 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           bishopX: Int, bishopY: Int): Int {
     val a = (kingX - bishopX) * (kingX - bishopX)
     val b = (kingY - bishopY) * (kingY - bishopY)
-    var x = false
-    var y = false
-    if (a == b) x = true
-    if ((kingX == rookX) || (kingY == rookY)) y = true
+    val x = a == b
+    val y = (kingX == rookX) || (kingY == rookY)
     return when {
         x && y -> 3
         x && !y -> 2
@@ -170,14 +166,4 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    return when {
-        maxOf(a, c) == c && maxOf(b, c) == b && minOf(b, d) == b -> b - c
-        maxOf(a, c) == c && maxOf(b, c) == b && maxOf(b, d) == b -> d - c
-        maxOf(a, c) == a && maxOf(d, a) == d && minOf(b, d) == d -> d - a
-        maxOf(a, c) == a && maxOf(d, a) == d && maxOf(b, d) == d -> b - a
-        a == c && minOf(b, d) == d -> d - a
-        a == c && minOf(b, d) == b -> b - a
-        else -> -1
-    }
-}
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = maxOf(-1, minOf(b, d) - maxOf(a, c))
