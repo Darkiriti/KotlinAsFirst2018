@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson3.task1
 
 import lesson1.task1.sqr
@@ -41,7 +42,7 @@ fun isPrime(n: Int): Boolean {
  */
 fun isPerfect(n: Int): Boolean {
     var sum = 1
-    for (m in 2..n/2) {
+    for (m in 2..n / 2) {
         if (n % m > 0) continue
         sum += m
         if (sum > n) break
@@ -69,8 +70,9 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = if (n in -9..9) 1
-else digitNumber(n / 10) + digitNumber(n % 10)
+fun digitNumber(n: Int): Int =
+        if (n in -9..9) 1
+        else digitNumber(n / 10) + digitNumber(n % 10)
 
 /**
  * Простая
@@ -111,15 +113,15 @@ fun lcm(m: Int, n: Int): Int {
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int {
-    if (isPrime(n)) return n
-    else {
+fun minDivisor(n: Int): Int = when (isPrime(n)) {
+    true -> n
+    false -> {
         var k = 1
         for (i in 2..n) {
             k = i
             if (n % k == 0) break
         }
-        return k
+        k
     }
 }
 
@@ -128,15 +130,9 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    if (isPrime(n)) return 1
-    else {
-        var k = 1
-        for (i in 2..n/2) {
-            if (n % i == 0) k = i
-        }
-        return k
-    }
+fun maxDivisor(n: Int): Int = when (isPrime(n)) {
+    true -> 1
+    false -> n / minDivisor(n)
 }
 
 /**
@@ -146,13 +142,16 @@ fun maxDivisor(n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var a = true
-    if (maxOf(m, n) % minOf(m, n) == 0) a = false
-    else for (i in 2..minOf(m, n)/2) {
-        if ((m % i == 0) && (n % i == 0)) a = false
+fun isCoPrime(m: Int, n: Int): Boolean = when {
+    m == 1 || n == 1 -> true
+    else -> {
+        var a = true
+        if (maxOf(m, n) % minOf(m, n) == 0) a = false
+        else for (i in 2..minOf(m, n) / 2) {
+            if ((m % i == 0) && (n % i == 0)) a = false
+        }
+        a
     }
-    return a
 }
 
 /**
@@ -163,10 +162,9 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    var a = false
     for (i in sqrt(m.toDouble()).toInt()..sqrt(n.toDouble()).toInt())
-        if ((sqr(i) <= n) && (sqr(i) >= m)) a = true
-    return a
+        if ((sqr(i) <= n) && (sqr(i) >= m)) return true
+    return false
 }
 
 /**
@@ -263,20 +261,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean {
-    var d = 0
-    var k = n
-    while (k > 0) {
-        k /= 10
-        d++
-    }
-    var a = true
-    for (i in 1..d/2) {
-        if (n / Math.pow(10.0, (i - 1).toDouble()).toInt() % 10 != n / Math.pow(10.0, (d - 1).toDouble()).toInt() % 10) a = false
-        d--
-    }
-    return a
-}
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя
