@@ -2,7 +2,7 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
-import kotlin.math.sqrt
+import lesson1.task1.trackLength
 
 /**
  * Пример
@@ -18,10 +18,7 @@ fun pointInsideCircle(x: Double, y: Double, x0: Double, y0: Double, r: Double) =
  * Четырехзначное число назовем счастливым, если сумма первых двух ее цифр равна сумме двух последних.
  * Определить, счастливое ли заданное число, вернуть true, если это так.
  */
-fun isNumberHappy(number: Int): Boolean = when {
-    number % 10 + number / 10 % 10 == number / 100 % 10 + number / 1000 -> true
-    else -> false
-}
+fun isNumberHappy(number: Int): Boolean = number % 10 + number / 10 % 10 == number / 100 % 10 + number / 1000
 
 /**
  * Простая
@@ -30,10 +27,7 @@ fun isNumberHappy(number: Int): Boolean = when {
  * Определить, угрожают ли они друг другу. Вернуть true, если угрожают.
  * Считать, что ферзи не могут загораживать друг друга.
  */
-fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = when {
-    x1 == x2 || y1 == y2 || sqr(x1 - x2) == sqr (y1 - y2) -> true
-    else -> false
-}
+fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = x1 == x2 || y1 == y2 || sqr(x1 - x2) == sqr (y1 - y2)
 
 
 /**
@@ -57,7 +51,7 @@ fun daysInMonth(month: Int, year: Int): Int = when (month) {
  * Вернуть true, если утверждение верно
  */
 fun circleInside(x1: Double, y1: Double, r1: Double,
-                 x2: Double, y2: Double, r2: Double): Boolean = sqrt(sqr(x1 - x2) + sqr(y1 - y2)) + r1 <= r2
+                 x2: Double, y2: Double, r2: Double): Boolean = trackLength(x1, y1, x2, y2) + r1 <= r2
 
 /**
  * Средняя
@@ -68,9 +62,9 @@ fun circleInside(x1: Double, y1: Double, r1: Double,
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean = when {
-    a <= r && b <= s || a <= s && b <= r -> true
-    a <= r && c <= s || a <= s && c <= r -> true
-    b <= r && c <= s || b <= s && c <= r -> true
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean = when (maxOf(a, b, c)) {
+    c -> minOf(a, r) == a && minOf(b, s) == b || minOf(b, r) == b && minOf(a, s) == a
+    b -> minOf(a, r) == a && minOf(c, s) == c || minOf(c, r) == c && minOf(a, s) == a
+    a -> minOf(c, r) == c && minOf(b, s) == b || minOf(b, r) == b && minOf(c, s) == c
     else -> false
 }
