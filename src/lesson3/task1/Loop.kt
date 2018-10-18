@@ -3,6 +3,7 @@
 package lesson3.task1
 
 import lesson1.task1.sqr
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -113,16 +114,13 @@ fun lcm(m: Int, n: Int): Int {
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = when (isPrime(n)) {
-    true -> n
-    false -> {
-        var k = 1
-        for (i in 2..n) {
-            k = i
-            if (n % k == 0) break
-        }
-        k
+fun minDivisor(n: Int): Int {
+    var k = 1
+    for (i in 2..n) {
+        k = i
+        if (n % k == 0) break
     }
+    return k
 }
 
 /**
@@ -130,10 +128,7 @@ fun minDivisor(n: Int): Int = when (isPrime(n)) {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = when (isPrime(n)) {
-    true -> 1
-    false -> n / minDivisor(n)
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая
@@ -142,15 +137,14 @@ fun maxDivisor(n: Int): Int = when (isPrime(n)) {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = when {
-    m == 1 || n == 1 -> true
-    else -> {
-        var a = true
-        if (maxOf(m, n) % minOf(m, n) == 0) a = false
+fun isCoPrime(m: Int, n: Int): Boolean {
+    if (m == 1 || n == 1) return true
+    else {
+        if (maxOf(m, n) % minOf(m, n) == 0) return false
         else for (i in 2..minOf(m, n) / 2) {
-            if ((m % i == 0) && (n % i == 0)) a = false
+            if ((m % i == 0) && (n % i == 0)) return false
         }
-        a
+        return true
     }
 }
 
@@ -199,10 +193,10 @@ fun collatzSteps(x: Int): Int = when {
  */
 fun sin(x: Double, eps: Double): Double {
     var k = 1
-    var i = x
-    var a = x
-    while (abs(i * (-sqr(x)) / factorial(k + 2)) >= eps) {
-        i *= -sqr(x)
+    var i = x % (2 * PI)
+    var a = x % (2 * PI)
+    while (abs(i * (-sqr(x % (2 * PI))) / factorial(k + 2)) >= eps) {
+        i *= -sqr(x % (2 * PI))
         k += 2
         a += i / factorial(k)
     }
@@ -220,8 +214,8 @@ fun cos(x: Double, eps: Double): Double {
     var k = 0
     var i = 1.0
     var a = 1.0
-    while (abs(i * (-sqr(x)) / factorial(k + 2)) >= eps) {
-        i *= -sqr(x)
+    while (abs(i * (-sqr(x % (2 * PI))) / factorial(k + 2)) >= eps) {
+        i *= -sqr(x % (2 * PI))
         k += 2
         a += i / factorial(k)
     }
@@ -271,8 +265,8 @@ fun isPalindrome(n: Int): Boolean = n == revert(n)
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = when (n / 10 != 0) {
-    true -> {
+fun hasDifferentDigits(n: Int): Boolean {
+    if (n / 10 != 0) {
         var a = false
         var k = n / 10
         val c = n % 10
@@ -280,9 +274,8 @@ fun hasDifferentDigits(n: Int): Boolean = when (n / 10 != 0) {
             if (k % 10 != c) a = true
             k /= 10
         }
-        a
-    }
-    else -> false
+        return a
+    } else return false
 }
 
 /**
