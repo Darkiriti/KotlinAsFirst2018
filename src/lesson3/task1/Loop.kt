@@ -267,14 +267,13 @@ fun isPalindrome(n: Int): Boolean = n == revert(n)
  */
 fun hasDifferentDigits(n: Int): Boolean {
     return if (n / 10 != 0) {
-        var a = false
         var k = n / 10
         val c = n % 10
         while (k > 0) {
-            if (k % 10 != c) a = true
+            if (k % 10 != c) return true
             k /= 10
         }
-        a
+        return false
     } else false
 }
 
@@ -316,7 +315,7 @@ fun fibSequenceDigit(n: Int): Int {
     var i = 0
     var a = 0
     var k = 1
-    while (i < n){
+    while (i < n) {
         a = fib(k)
         i += digitNumber(a)
         k++
