@@ -230,14 +230,14 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var a = 0
-    var c = n
+    var a = n % 10
+    var c = n / 10
     while (c > 0) {
-        a += c % 10
         a *= 10
+        a += c % 10
         c /= 10
     }
-    return a / 10
+    return a
 }
 
 /**
