@@ -3,7 +3,10 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
 import lesson3.task1.isPrime
+import java.lang.Math.pow
+import java.lang.StringBuilder
 import kotlin.math.sqrt
 
 /**
@@ -116,13 +119,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double {
-    var a = 0.0
-    for (i in 0 until v.size) {
-        a += v[i] * v[i]
-    }
-    return sqrt(a)
-}
+fun abs(v: List<Double>): Double = sqrt(v.fold(0.0) { a, i -> a + sqr(i) })
 
 /**
  * Простая
@@ -132,13 +129,7 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double =
         when (list.isEmpty()) {
             true -> 0.0
-            else -> {
-                var a = 0.0
-                for (i in 0 until list.size) {
-                    a += list[i]
-                }
-                a / list.size.toDouble()
-            }
+            else -> list.sum() / list.size
         }
 
 /**
@@ -149,16 +140,12 @@ fun mean(list: List<Double>): Double =
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun center(list: MutableList<Double>): MutableList<Double> =
-        when (list.isEmpty()) {
-            true -> list
-            else -> {
-                val a = mean(list)
-                for (i in 0 until list.size)
-                    list[i] -= a
-                list
-            }
-        }
+fun center(list: MutableList<Double>): MutableList<Double> {
+    val a = mean(list)
+    for (i in 0 until list.size)
+        list[i] -= a
+    return list
+}
 
 /**
  * Средняя
@@ -167,12 +154,8 @@ fun center(list: MutableList<Double>): MutableList<Double> =
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.0.
  */
-fun times(a: List<Double>, b: List<Double>): Double {
-    var c = 0.0
-    for (i in 0 until a.size)
-        c += a[i] * b[i]
-    return c
-}
+fun times(a: List<Double>, b: List<Double>): Double =
+        a.zip(b) { ai, bi -> ai * bi }.fold(0.0) { s, i -> s + i }
 
 /**
  * Средняя
@@ -182,15 +165,8 @@ fun times(a: List<Double>, b: List<Double>): Double {
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0.0 при любом x.
  */
-fun polynom(p: List<Double>, x: Double): Double {
-    var a = 1.0
-    var result = 0.0
-    for (i in 0 until p.size) {
-        result += p[i] * a
-        a *= x
-    }
-    return result
-}
+fun polynom(p: List<Double>, x: Double): Double =
+        p.foldIndexed(0.0) { i, s, a -> s + a * pow(x, i.toDouble()) }
 
 
 /**
@@ -276,14 +252,14 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun convertToString(n: Int, base: Int): String {
     val s = convert(n, base)
-    var result = ""
+    val result = StringBuilder()
     val a = "abcdefghijklmnopqrstuvwxyz"
     for (b in s)
-        if (b < 10)
-            result += "$b"
-        else
-            result += a[b - 10]
-    return result
+        when (b < 10) {
+            true -> result.append("$b")
+            false -> result.append(a[b - 10])
+        }
+    return result.toString()
 }
 
 /**
@@ -332,16 +308,16 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var result = ""
+    val result = StringBuilder()
     val a = listOf(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
     val b = listOf("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
     var c = n
     for (i in a.size - 1 downTo 0)
         while (c >= a[i]) {
-            result += b[i]
+            result.append(b[i])
             c -= a[i]
         }
-    return result
+    return result.toString()
 }
 
 /**
