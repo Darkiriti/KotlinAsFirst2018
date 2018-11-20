@@ -327,4 +327,49 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+val nin = listOf("", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+val nint = listOf("", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать")
+val t = listOf("", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто")
+val h = listOf("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+
+fun last(n: Int): List<String> {
+    val l = mutableListOf<String>()
+    if (n > 0) {
+        l.add(h[n / 100 % 10])
+        if (n % 100 in 11..19) {
+            l.add(nint[n % 10])
+        } else {
+            l.add(t[n / 10 % 10])
+            when (n % 10) {
+                1 -> l.add("один")
+                2 -> l.add("два")
+                else -> l.add(nin[n % 10])
+            }
+        }
+    }
+    return l.filter { it != "" }
+}
+
+fun russian(n: Int): String {
+    val f = mutableListOf<String>()
+    val newN = n / 1000
+    if (n > 999) {
+        f.add(h[newN / 100 % 10])
+        if (n / 1000 % 100 in 11..19) {
+            f.add(nint[newN % 10])
+        } else {
+            f.add(t[newN / 10 % 10])
+            f.add(nin[newN % 10])
+        }
+        if (newN % 100 in 11..19) {
+            f.add("тысяч")
+        } else {
+            when (newN % 10) {
+                1 -> f.add("тысяча")
+                in 2..4 -> f.add("тысячи")
+                else -> f.add("тысяч")
+            }
+        }
+    }
+    return (f.filter { it != "" } + last(n)).joinToString(separator = (" "))
+}
