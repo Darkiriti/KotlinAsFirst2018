@@ -233,8 +233,10 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> =
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-        chars.map { it }.toSet().containsAll(word.toSet())
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    val a = chars.map { it.toLowerCase() }
+    return word.toLowerCase().toSet().all { it in a }
+}
 
 /**
  * Средняя
@@ -287,7 +289,7 @@ fun hasAnagrams(words: List<String>): Boolean {
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     for (i in list)
         if (number - i in list && list.indexOf(i) != list.indexOf(number - i))
-            return Pair(list.indexOf(i), list.indexOf(number - i))
+            return Pair(list.indexOf(i), list.lastIndexOf(number - i))
     return Pair(-1, -1)
 }
 

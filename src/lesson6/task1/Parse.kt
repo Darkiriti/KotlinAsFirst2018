@@ -130,7 +130,7 @@ fun flattenPhoneNumber(phone: String): String =
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int =
-        if (!jumps.matches(Regex("""^(?:[-%]|\d+)(?:\s(?:\d+|[-%]))*$"""))) -1
+        if (!jumps.matches(Regex("""^(?:[-%]|\d+)(?:\s+(?:\d+|[-%]))*$"""))) -1
         else jumps.split(" ").filter { it.matches(Regex("""\d+""")) }.map { it.toInt() }.max() ?: -1
 
 
@@ -171,7 +171,7 @@ fun plusMinus(expression: String): Int =
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = Regex("""([а-я]+)\s+\1""").find(str.toLowerCase())?.range?.first ?: -1
+fun firstDuplicateIndex(str: String): Int = Regex("""(.+)\s\1""").find(str.toLowerCase())?.range?.first ?: -1
 
 /**
  * Сложная
@@ -186,7 +186,7 @@ fun firstDuplicateIndex(str: String): Int = Regex("""([а-я]+)\s+\1""").find(st
  */
 fun mostExpensive(description: String): String =
         if (description.matches(Regex("""(?:[А-Я][а-я]*\s\d+.?\d)(?:;\s[А-Я][а-я]*\s\d+.?\d)*""")))
-            description.split("""\s*;\s*""".toRegex()).maxBy { it.split(" ")[1].toDouble() }
+            description.split(Regex("""\s*;\s*""")).maxBy { it.split(" ")[1].toDouble() }
                     ?.split(" ")?.get(0) ?: ""
         else ""
 
@@ -206,7 +206,7 @@ fun fromRoman(roman: String): Int {
     var result = 0
     var k = 0
     val pattern = ("""^M{0,3}(?:|CM|DC{0,3}|CD|C{0,3})?(?:XC|LX{0,3}|XL|X{0,3})?(?:IX|VI{0,3}|IV|I{1,3})?$""").toRegex()
-    if (!roman.matches(pattern)) return -1
+    if (!roman.matches(pattern) || roman.isEmpty()) return -1
     for (i in roman.length - 1 downTo 0) {
         val number = a[roman[i]] ?: 0
         result += if (number >= k) number else number * -1
