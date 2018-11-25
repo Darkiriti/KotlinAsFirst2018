@@ -111,11 +111,10 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val result = mutableMapOf<Int, List<String>>()
-    grades.forEach { name, grade ->
-        result[grade] = ((result[grade] ?: listOf()) + name).sortedDescending()
-    }
-    return result
+    val result = mutableMapOf<Int, MutableList<String>>()
+    for ((key, value) in grades) result.getOrPut(value, ::mutableListOf).add(key)
+    result.forEach { it.value.sortDescending() }
+    return result.mapValues { it.value.toList() }.toMap()
 }
 
 /**
@@ -130,6 +129,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean =
         a.all { it.value == b[it.key] }
+
 /**
  * Средняя
  *
@@ -185,7 +185,19 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    var result = mutableMapOf<String, MutableSet<String>>()
+    val a = mutableMapOf<String, MutableSet<String>>()
+    for ((key) in friends) a[key] = friends[key]!!.toMutableSet()
+    while (a != result) {
+        result = a
+        for ((key, value) in result) for (i in value)
+            if (i in result) a[key] = a[key]!!.union(result[i]!!).toMutableSet()
+            else a[i] = mutableSetOf()
+    }
+    result.map { if (it.value.contains(it.key)) it.value.remove(it.key) }
+    return result
+}
 
 /**
  * Простая
@@ -251,10 +263,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> =
  */
 fun hasAnagrams(words: List<String>): Boolean {
     val a = words.map { it.toList().sorted() }
-    if (a.toSet().toList() != a) {
-        return true
-    }
-    return false
+    return a.toSet().toList() != a
 }
 
 
@@ -275,7 +284,12 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    for (i in list)
+        if (number - i in list && list.indexOf(i) != list.indexOf(number - i))
+            return Pair(list.indexOf(i), list.indexOf(number - i))
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная
