@@ -174,10 +174,10 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             var k = " "
             for (i in 0 until s / c) k += " "
             for (i in 0 until it.length) {
-                val str = if (it[i] == ' ') k + if (b > 0) {
+                val str = if (it[i] == ' ') if (b > 0) {
                     b--
-                    " "
-                } else ""
+                    k + " "
+                } else k + ""
                 else it[i]
                 wr.write(str.toString())
             }
