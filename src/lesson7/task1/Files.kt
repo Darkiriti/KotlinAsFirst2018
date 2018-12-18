@@ -54,7 +54,19 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val rdr = File(inputName).bufferedReader().readLines().joinToString("\n").toLowerCase()
+    val a = mutableMapOf<String, Int>()
+    substrings.forEach {
+        a[it] = 0
+        var c = Regex(it.toLowerCase()).find(rdr)
+        while (c != null) {
+            a[it] = (a[it] ?: 0) + 1
+            c = Regex(it.toLowerCase()).find(rdr, c.range.first + 1)
+        }
+    }
+    return a
+}
 
 
 /**
@@ -71,7 +83,25 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val wr = File(outputName).bufferedWriter()
+    File(inputName).bufferedReader().readLines().forEach {
+        var a = ""
+        for (c in it) {
+            val str =
+                    if (Regex("""[жчшщ][ыяю]""", RegexOption.IGNORE_CASE).matches(a + c))
+                        when (c.toLowerCase()) {
+                            'ы' -> c - 19
+                            'я' -> c - 31
+                            'ю' -> c - 11
+                            else -> throw IllegalArgumentException()
+                        }
+                    else c
+            wr.write(str.toString())
+            a = c.toString()
+        }
+        wr.newLine()
+    }
+    wr.close()
 }
 
 /**
@@ -92,7 +122,17 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    val wr = File(outputName).bufferedWriter()
+    val rdr = File(inputName).bufferedReader().readLines()
+    val a = rdr.map { it.length }.max() ?: 0
+    rdr.forEach {
+        var str = it.trim()
+        for (i in 0 until (a - str.length) / 2)
+            str = " " + str
+        wr.write(str)
+        wr.newLine()
+    }
+    wr.close()
 }
 
 /**
@@ -123,7 +163,28 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    val wr = File(outputName).bufferedWriter()
+    val rdr = File(inputName).bufferedReader().readLines().map { it.trim().replace(Regex("""\s+"""), " ") }
+    val a = rdr.map { it.length }.max() ?: 0
+    rdr.forEach {
+        if (it.split(" ").size > 1 && it.length != a) {
+            val s = a - it.length
+            val c = it.split(" ").size - 1
+            var b = s % c
+            var k = " "
+            for (i in 0 until s / c) k += " "
+            for (i in 0 until it.length) {
+                val str = if (it[i] == ' ') k + if (b > 0) {
+                    b--
+                    " "
+                } else ""
+                else it[i]
+                wr.write(str.toString())
+            }
+        } else wr.write(it)
+        wr.newLine()
+    }
+    wr.close()
 }
 
 /**
@@ -144,7 +205,14 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val rdr = File(inputName).bufferedReader().readLines()
+    val a = mutableMapOf<String, Int>()
+    if (rdr.isNotEmpty())
+        rdr.joinToString(" ").toLowerCase().split(Regex("""[^a-zA-Zа-яА-ЯёЁ]+"""))
+                .forEach { a[it] = (a[it] ?: 0) + 1 }
+    return a.toList().sortedByDescending { it.second }.take(20).toMap()
+}
 
 /**
  * Средняя
@@ -182,7 +250,24 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val wr = File(outputName).bufferedWriter()
+    val rdr = File(inputName).bufferedReader().readLines()
+    var a = true
+    rdr.forEach {
+        for (i in 0 until it.length) {
+            var str = it[i].toString()
+            if (dictionary[it[i].toUpperCase()] != null || dictionary[it[i].toLowerCase()] != null)
+                str = dictionary[it[i].toUpperCase()]?.toLowerCase() ?: dictionary[it[i].toLowerCase()]?.toLowerCase()
+                        ?: ""
+            if (a) {
+                str = str.capitalize()
+                a = false
+            }
+            wr.write(str)
+        }
+        wr.newLine()
+    }
+    wr.close()
 }
 
 /**
@@ -210,7 +295,13 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val wr = File(outputName).bufferedWriter()
+    val rdr = File(inputName).bufferedReader().readLines()
+    val a = rdr.maxBy { it.length }?.length ?: 0
+    val str = mutableListOf<String>()
+    rdr.forEach { if (it.toLowerCase().toSet().size == it.length && it.length == a) str.add(it) }
+    wr.write(rdr.filter { it.toLowerCase().toSet().size == it.length && it.length == a }.joinToString(", "))
+    wr.close()
 }
 
 /**
