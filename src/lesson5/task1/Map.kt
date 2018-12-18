@@ -188,11 +188,11 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     var result = mutableMapOf<String, MutableSet<String>>()
     val a = mutableMapOf<String, MutableSet<String>>()
-    for ((key) in friends) a[key] = friends[key]!!.toMutableSet()
+    for ((k) in friends) a[k] = friends[k]!!.toMutableSet()
     while (a != result) {
         result = a
-        for ((key, value) in result) for (i in value)
-            if (i in result) a[key] = a[key]!!.union(result[i]!!).toMutableSet()
+        for ((k, v) in result) for (i in v)
+            if (i in result) a[k] = a[k]!!.union(result[i]!!).toMutableSet()
             else a[i] = mutableSetOf()
     }
     result.map { if (it.value.contains(it.key)) it.value.remove(it.key) }
@@ -288,8 +288,8 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     for (i in list)
-        if (number - i in list && list.indexOf(i) != list.indexOf(number - i))
-            return Pair(list.indexOf(i), list.lastIndexOf(number - i))
+        if (number - i in list && list.indexOf(i) != list.lastIndexOf(number - i))
+            return Pair(list.indexOf(i), list.indexOf(number - i))
     return Pair(-1, -1)
 }
 
@@ -312,4 +312,15 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    if (treasures.isEmpty()) return setOf()
+    val list = treasures.map { it.key to it.value }.sortedBy { it.second.second / it.second.first }
+    val a = mutableSetOf<String>()
+    var m = 0
+    for ((k, v) in list) {
+        if (m + v.first > capacity) break
+        a.add(k)
+        m += v.first
+    }
+    return a.toSet()
+}
