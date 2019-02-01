@@ -78,7 +78,7 @@ fun dateStrToDigit(str: String): String {
             "июня" to 6, "июля" to 7, "августа" to 8, "сентября" to 9, "октября" to 10, "ноября" to 11,
             "декабря" to 12)
     val result = str.split(" ").toList()
-    return if (result.size != 3 || a[result[1]] == null || daysInMonth(a[result[1]]!!,
+    return if (a[result[1]] == null || result.size != 3 || daysInMonth(a[result[1]]!!,
                     result[2].toInt()) < result[0].toInt()) ""
     else String.format("%02d.%02d.%d", result[0].toInt(), a[result[1]], result[2].toInt())
 }
@@ -98,7 +98,7 @@ fun dateDigitToStr(digital: String): String {
             "06" to "июня", "07" to "июля", "08" to "августа", "09" to "сентября", "10" to "октября", "11" to "ноября",
             "12" to "декабря")
     val result = digital.split(".").toList()
-    return if (result.size != 3 || a[result[1]] == null || daysInMonth(result[1].toInt(),
+    return if (a[result[1]] == null || result.size != 3 || daysInMonth(result[1].toInt(),
                     result[2].toInt()) < result[0].toInt()) ""
     else String.format("%d %s %d", result[0].toInt(), a[result[1]], result[2].toInt())
 }
@@ -206,7 +206,7 @@ fun fromRoman(roman: String): Int {
     var result = 0
     var k = 0
     val pattern = ("""^M{0,3}(?:|CM|DC{0,3}|CD|C{0,3})?(?:XC|LX{0,3}|XL|X{0,3})?(?:IX|VI{0,3}|IV|I{1,3})?$""").toRegex()
-    if (!roman.matches(pattern) || roman.isEmpty()) return -1
+    if (roman.isEmpty() || !roman.matches(pattern)) return -1
     for (i in roman.length - 1 downTo 0) {
         val number = a[roman[i]] ?: 0
         result += if (number >= k) number else number * -1
