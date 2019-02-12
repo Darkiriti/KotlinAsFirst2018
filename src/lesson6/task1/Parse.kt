@@ -74,13 +74,19 @@ fun main(args: Array<String>) {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    val a = mapOf("января" to 1, "февраля" to 2, "марта" to 3, "апреля" to 4, "мая" to 5,
-            "июня" to 6, "июля" to 7, "августа" to 8, "сентября" to 9, "октября" to 10, "ноября" to 11,
-            "декабря" to 12)
-    val result = str.split(" ").toList()
-    return if (daysInMonth(a[result[1]]!!, result[2].toInt()) < result[0].toInt() ||
-            a[result[1]] == null || result.size != 3) ""
-    else String.format("%02d.%02d.%d", result[0].toInt(), a[result[1]], result[2].toInt())
+    val parts = str.split(" ")
+    val map = mapOf("января" to 1, "февраля" to 2, "марта" to 3, "апреля" to 4, "мая" to 5, "июня" to 6, "июля" to 7,
+            "августа" to 8, "сентября" to 9, "октября" to 10, "ноября" to 11, "декабря" to 12)
+
+    return try {
+        if (parts.size == 3 && map.contains(parts[1])
+                && daysInMonth(map[parts[1]]!!, parts[2].toInt()) >= parts[0].toInt()
+                && parts[0].toInt() > 0 && parts[2].toInt() >= 0) {
+            String.format("%02d.%02d.%d", parts[0].toInt(), map[parts[1]], parts[2].toInt())
+        } else ""
+    } catch (e: NumberFormatException) {
+        return ""
+    }
 }
 
 /**
@@ -94,13 +100,17 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val a = mapOf("01" to "января", "02" to "февраля", "03" to "марта", "04" to "апреля", "05" to "мая",
-            "06" to "июня", "07" to "июля", "08" to "августа", "09" to "сентября", "10" to "октября", "11" to "ноября",
-            "12" to "декабря")
-    val result = digital.split(".").toList()
-    return if (daysInMonth(result[1].toInt(), result[2].toInt()) < result[0].toInt() ||
-            a[result[1]] == null || result.size != 3) ""
-    else String.format("%d %s %d", result[0].toInt(), a[result[1]], result[2].toInt())
+    if (!Regex("\\d{1,2}.\\d{2}.\\d+").matches(digital)) return ""
+    val (day1, month1, year1) = digital.split(".")
+    val months = listOf("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября",
+            "октября", "ноября", "декабря")
+    val year = year1.toInt()
+    val day = day1.toInt()
+    val month = month1.toInt()
+    if ((month !in 1..12)) return ""
+    val monthTRUE = months[month - 1]
+    if (day !in 1..daysInMonth(month, year)) return ""
+    return String.format("%d %s %d", day, monthTRUE, year)
 }
 
 /**
