@@ -3,6 +3,8 @@
 package lesson5.task1
 
 import lesson4.task1.mean
+import java.util.Collections.max
+import kotlin.math.max
 
 /**
  * Пример
@@ -96,10 +98,17 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> =
-        mapA.toList().plus(mapB.toList()).groupBy({ it.first }, { it.second })
-                .mapValues { (_, value) -> value.distinctBy { it }.joinToString(", ") { it } }
-
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    val result = mapB.toMutableMap()
+    for ((first, second) in mapA) {
+        if ((mapA[first] == mapB[first]) || (!mapB.containsKey(first)))
+            result[first] = second
+        else {
+            result[first] = mapA[first] + ", " + mapB[first]
+        }
+    }
+    return result
+}
 /**
  * Простая
  *
@@ -140,8 +149,15 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean =
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
-        stockPrices.groupBy({ it.first }, { it.second }).mapValues { mean(it.value) }
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+    val list = stockPrices.toMutableList()
+    val result = mutableMapOf<String, Double>()
+    for (pair in list) {
+        if (!result.contains(pair.first)) result[pair.first] = pair.second
+        else result[pair.first] = result[pair.first]!! + pair.second
+    }
+    return result.mapValues { el -> el.value / list.count { el.key == it.first } }
+}
 
 /**
  * Средняя
@@ -233,10 +249,9 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> =
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val a = chars.map { it.toLowerCase() }
-    return word.toLowerCase().toSet().all { it in a }
-}
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+        chars.map { it -> it.toLowerCase() }.containsAll(word.toLowerCase().toSet())
+
 
 /**
  * Средняя
@@ -250,9 +265,15 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> =
-        list.groupBy { it }.mapValues { if (it.value.size > 1) it.value.size else 1 }.filterValues { it > 1 }
-
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val result = mutableMapOf<String, Int>()
+    for (i in 0..(list.size - 1)) {
+        if ((list.filter { it == list[i] }.size != 1) && list.isNotEmpty()) {
+            result[list[i]] = list.filter { it == list[i] }.size
+        }
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -264,8 +285,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> =
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    val a = words.map { it.toList().sorted() }
-    return a.toSet().toList() != a
+    val result = mutableSetOf<String>()
+    words.forEach { result.add(it.toCharArray().sorted().toString()) }
+    return words.size != result.size
 }
 
 
@@ -287,10 +309,17 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (i in list)
-        if (number - i in list && list.indexOf(i) != list.lastIndexOf(number - i))
-            return Pair(list.indexOf(i), list.indexOf(number - i))
-    return Pair(-1, -1)
+    val a = mutableMapOf<Int, Int>()
+    var result = Pair(-1, -1)
+    for (n in list.withIndex()) {
+        if (a.contains(number - n.value)) {
+            result = Pair(a[number - n.value]!!, n.index)
+            break
+        } else if (!a.contains(n.value)) {
+            a[n.value] = n.index
+        }
+    }
+    return result
 }
 
 /**
@@ -313,14 +342,37 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    if (treasures.isEmpty()) return setOf()
-    val list = treasures.map { it.key to it.value }.sortedBy { it.second.second / it.second.first }
-    val a = mutableSetOf<String>()
-    var m = 0
-    for ((k, v) in list) {
-        if (m + v.first > capacity) break
-        a.add(k)
-        m += v.first
+    var result = setOf<String>()
+    val list = mutableListOf<Int>()
+    val table = mutableListOf(list)
+    val name = mutableListOf<String>()
+    for (i in 0..capacity) {
+        list.add(0)
     }
-    return a.toSet()
+    treasures.forEach { name.add(it.key) }
+    for (i in 1..treasures.size) {
+        table.add(mutableListOf(0))
+    }
+    for (k in 1..treasures.size) {
+        val treasure = treasures[name[k - 1]]!!
+        for (s in 1..capacity) {
+            if (treasure.first > s)
+                table[k].add(table[k - 1][s])
+            else
+                table[k].add(max(table[k - 1][s], table[k - 1][s - treasure.first] + treasure.second))
+        }
+    }
+    var k = treasures.size
+    var s = capacity
+    while (k > 0 && s > 0) {
+        val treasure = treasures[name[k - 1]]!!
+        if (table[k][s] == 0) return result
+        if (table[k][s] == table[k - 1][s]) k--
+        else {
+            result += name[k - 1]
+            k--
+            s -= treasure.first
+        }
+    }
+    return result
 }
