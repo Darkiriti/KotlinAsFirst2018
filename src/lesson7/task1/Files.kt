@@ -127,8 +127,7 @@ fun centerFile(inputName: String, outputName: String) {
     val a = rdr.map { it.length }.max() ?: 0
     rdr.forEach {
         var str = it.trim()
-        for (i in 0 until (a - str.length) / 2)
-            str = " " + str
+        str = " ".repeat((a - str.length) / 2) + str
         wr.write(str)
         wr.newLine()
     }
@@ -171,8 +170,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             val s = a - it.length
             val c = it.split(" ").size - 1
             var b = s % c
-            var k = " "
-            for (i in 0 until s / c) k += " "
+            var k = " ".repeat(s / c + 1)
             for (i in 0 until it.length) {
                 val str = if (it[i] == ' ') if (b > 0) {
                     b--
@@ -206,12 +204,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  *
  */
 fun top20Words(inputName: String): Map<String, Int> {
-    val rdr = File(inputName).bufferedReader().readLines()
-    val a = mutableMapOf<String, Int>()
-    if (rdr.isNotEmpty())
-        rdr.joinToString(" ").toLowerCase().split(Regex("""[^a-zA-Zа-яА-ЯёЁ]+"""))
-                .forEach { a[it] = (a[it] ?: 0) + 1 }
-    return a.toList().sortedByDescending { it.second }.take(20).toMap()
+    TODO()
 }
 
 /**
@@ -298,8 +291,6 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val wr = File(outputName).bufferedWriter()
     val rdr = File(inputName).bufferedReader().readLines()
     val a = rdr.maxBy { it.length }?.length ?: 0
-    val str = mutableListOf<String>()
-    rdr.forEach { if (it.toLowerCase().toSet().size == it.length && it.length == a) str.add(it) }
     wr.write(rdr.filter { it.toLowerCase().toSet().size == it.length && it.length == a }.joinToString(", "))
     wr.close()
 }
