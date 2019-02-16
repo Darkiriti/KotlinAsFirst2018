@@ -2,6 +2,7 @@
 package lesson9.task2
 
 import lesson9.task1.Matrix
+import lesson9.task1.MatrixImpl
 import lesson9.task1.createMatrix
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
@@ -59,7 +60,43 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    var a = 1
+    val result = MatrixImpl<Int>(height, width)
+    var maxH = height - 1
+    var maxW = width - 1
+    var minH = 0
+    var minW = 0
+    var s = true
+    while (a < height * width + 1) {
+        if (s) {
+            for (i in minW..maxW) {
+                result[minH, i] = a
+                a++
+            }
+            minH++
+            for (i in minH..maxH) {
+                result[i, maxW] = a
+                a++
+            }
+            maxW--
+            s = false
+        } else {
+            for (i in maxW downTo minW) {
+                result[maxH, i] = a
+                a++
+            }
+            maxH--
+            for (i in maxH downTo minH) {
+                result[i, minW] = a
+                a++
+            }
+            minW++
+            s = true
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
