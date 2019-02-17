@@ -73,7 +73,10 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double = TODO()
+    fun distance(other: Circle): Double =
+            if (center.distance(other.center) - radius - other.radius > 0)
+                center.distance(other.center) - radius - other.radius
+            else 0.0
 
     /**
      * Тривиальная
@@ -129,7 +132,9 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Найти точку пересечения с другой линией.
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
-    fun crossPoint(other: Line): Point = TODO()
+    fun crossPoint(other: Line): Point =
+            Point((other.b * cos(angle) - b * cos(other.angle)) / sin(angle - other.angle),
+                    (b * sin(other.angle) - other.b * sin(angle)) / sin(other.angle - angle))
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
 
@@ -168,8 +173,8 @@ fun lineByPoints(a: Point, b: Point): Line = TODO()
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
     val s = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
-    val ang = if (lineBySegment(Segment(a, b)).angle < PI / 2) lineBySegment(Segment(a, b)).angle + PI / 2
-    else lineBySegment(Segment(a, b)).angle - PI / 2
+    val ang = if (lineBySegment(Segment(a, b)).angle >= PI / 2) lineBySegment(Segment(a, b)).angle - PI / 2
+    else lineBySegment(Segment(a, b)).angle + PI / 2
     return Line(s, ang)
 }
 
@@ -190,7 +195,10 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+    val center = bisectorByPoints(a, b).crossPoint(bisectorByPoints(b, c))
+    return Circle(center, center.distance(a))
+}
 
 /**
  * Очень сложная
